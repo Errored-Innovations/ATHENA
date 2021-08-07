@@ -23,12 +23,12 @@ public class AthenaCommand implements IAthenaCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command cmd, @NotNull String s, @NotNull String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("more args needed lmao");
+            AthenaCore.sendFailMessage(sender, "Not enough arguments are included! Please add a subcommand.");
             return true;
         }
         IAthenaCommand command = subcommands.get(args[0]);
         if (command == null) {
-            sender.sendMessage("No such command");
+            AthenaCore.sendFailMessage(sender, args[0] + " is not a valid command!");
             return true;
         }
         // Get metadata
@@ -46,7 +46,7 @@ public class AthenaCommand implements IAthenaCommand {
         }
 
         if (!command.onCommand(sender, cmd, s, args)) {
-            sender.sendMessage(commandInfo.usage());
+            AthenaCore.sendFailMessage(sender, "Usage: " + commandInfo.usage());
         }
         return true;
     }
