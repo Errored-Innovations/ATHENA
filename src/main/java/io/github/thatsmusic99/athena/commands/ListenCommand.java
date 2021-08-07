@@ -22,10 +22,6 @@ import java.util.List;
 public class ListenCommand implements IAthenaCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
-        if (!sender.hasPermission("athena.command.listen")) {
-
-            return true;
-        }
         if (args.length == 1) {
             AthenaCore.sendFailMessage(sender, "You need to specify an event to listen to!");
             return true;
