@@ -87,7 +87,6 @@ public class RemappingUtil {
     public void unmapEvent(CommandSender sender) {
         HashSet<AthenaExecutor> executors = registeredEvents.getOrDefault(sender, new HashSet<>());
         if (executors.isEmpty()) {
-            // TODO no listeners
             AthenaCore.sendSuccessMessage(sender, "You aren't listening to any events!");
             return;
         }
