@@ -18,11 +18,9 @@ public class EventCache {
 
     public EventCache() {
         instance = this;
-        AthenaCore.get().getLogger().info("Initiated EventCache");
         registeredEvents = new HashMap<>();
         for (HandlerList list : HandlerList.getHandlerLists()) {
             for (RegisteredListener listener : list.getRegisteredListeners()) {
-                AthenaCore.get().getLogger().info("Checking registered listener " + listener.getClass().getSimpleName());
                 Listener actualListener = listener.getListener();
                 for (Method method : actualListener.getClass().getDeclaredMethods()) {
                     if (!method.isAnnotationPresent(EventHandler.class)) continue;
