@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
-    <artifactId>Athena</artifactId>
+    <groupId>io.github.thatsmusic99</groupId>
+    <artifactId>ATHENA</artifactId>
     <version>1.0-BETA-1</version>
     <build>
         <plugins>
@@ -38,12 +38,6 @@
             <artifactId>paper-api</artifactId>
             <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.thatsmusic99</groupId>
-            <artifactId>ConfigurationMaster-API</artifactId>
-            <version>v2.0.0-BETA-1</version>
         </dependency>
 
         <dependency>
