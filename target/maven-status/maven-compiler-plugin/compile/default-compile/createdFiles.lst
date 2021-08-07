@@ -1,0 +1,10 @@
+io\github\thatsmusic99\athena\util\RemappingUtil$AthenaExecutor.class
+io\github\thatsmusic99\athena\util\EventCache.class
+io\github\thatsmusic99\athena\commands\AthenaCommand.class
+io\github\thatsmusic99\athena\AthenaCore.class
+io\github\thatsmusic99\athena\commands\ListenCommand.class
+io\github\thatsmusic99\athena\commands\Command.class
+io\github\thatsmusic99\athena\util\RemappingUtil.class
+io\github\thatsmusic99\athena\util\RemappingUtil$Change.class
+io\github\thatsmusic99\athena\commands\StopCommand.class
+io\github\thatsmusic99\athena\commands\IAthenaCommand.class
