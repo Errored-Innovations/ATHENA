@@ -213,7 +213,11 @@ public class RemappingUtil {
                     .append(Component.text("\n"))
                     .append(Component.text("Listener Class ", TextColor.color(0x9ED0FF)))
                     .append(Component.text("» ", NamedTextColor.DARK_GRAY))
-                    .append(Component.text(listenerClass.getSimpleName() + " (" + listenerClass.getName() + ")", AthenaCore.getSuccessColour()));
+                    .append(Component.text(listenerClass.getSimpleName() + " (" + listenerClass.getName() + ")", AthenaCore.getSuccessColour()))
+                    .append(Component.text("\n"))
+                    .append(Component.text("Event Priority", TextColor.color(0x9ED0FF)))
+                    .append(Component.text("» ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text(listener.getPriority().name(), AthenaCore.getSuccessColour()));
             infoDump = infoDump.hoverEvent(hoverText);
 
             Component result = AthenaCore.getPrefix().append(infoDump);
