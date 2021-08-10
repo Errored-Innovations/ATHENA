@@ -27,8 +27,8 @@
 
     <repositories>
         <repository>
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
     </repositories>
 
