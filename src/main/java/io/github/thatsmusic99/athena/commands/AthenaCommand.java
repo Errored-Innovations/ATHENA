@@ -55,17 +55,20 @@ public class AthenaCommand implements IAthenaCommand {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String s, @NotNull String[] args) {
         List<String> results = new ArrayList<>();
         if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], subcommands.keySet(), results);
+            for (String subcommand : subcommands.keySet()) {
+                if (!sender.hasPermission("athena.command." + subcommand.toLowerCase())) continue;
+                if (!subcommand.toLowerCase().startsWith(args[0].toLowerCase())) continue;
+                results.add(subcommand);
+            }
         }
         if (args.length == 2) {
             if (subcommands.get(args[0]) != null) {
                 Command commandInfo = subcommands.get(args[0]).getClass().getAnnotation(Command.class);
                 if (commandInfo == null) return results;
-                if (sender.hasPermission(commandInfo.permission())) {
-                    List<String> commandTB = subcommands.get(args[0]).onTabComplete(sender, command, s, args);
-                    if (commandTB == null) commandTB = new ArrayList<>();
-                    StringUtil.copyPartialMatches(args[1], commandTB, results);
-                }
+                if (!sender.hasPermission(commandInfo.permission())) return results;
+                List<String> commandTB = subcommands.get(args[0]).onTabComplete(sender, command, s, args);
+                if (commandTB == null) commandTB = new ArrayList<>();
+                StringUtil.copyPartialMatches(args[1], commandTB, results);
             }
         }
         return results;
