@@ -6,6 +6,7 @@ import io.github.thatsmusic99.athena.util.RemappingUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +19,7 @@ public class AthenaCore extends JavaPlugin {
     public void onEnable() {
         instance = this;
         getCommand("athena").setExecutor(new AthenaCommand());
+        new Metrics(this, 12408);
         new RemappingUtil();
         Bukkit.getScheduler().runTaskAsynchronously(this, EventCache::new);
     }
