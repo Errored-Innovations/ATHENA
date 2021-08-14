@@ -226,13 +226,6 @@ public class RemappingUtil {
         }
     }
 
-    private static class Change {
-        private final Object oldObj;
-        private final Object newObj;
-
-        public Change(Object oldObj, Object newObj) {
-            this.oldObj = oldObj;
-            this.newObj = newObj;
-        }
+    private record Change(Object oldObj, Object newObj) {
     }
 }
