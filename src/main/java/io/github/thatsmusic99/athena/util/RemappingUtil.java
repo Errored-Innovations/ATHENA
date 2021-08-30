@@ -4,7 +4,6 @@ import io.github.thatsmusic99.athena.AthenaCore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -68,7 +67,7 @@ public class RemappingUtil {
         int currentSize = listeners.size();
         for (RegisteredListener listener : handlerList.getRegisteredListeners()) {
             try {
-                AthenaExecutor executor = new AthenaExecutor(sender, listener);
+                AthenaExecutor executor = new AthenaExecutor(sender, listener, clazz.getSimpleName());
                 executor.remapExecutor();
                 listeners.add(executor);
             } catch (NoSuchFieldException | IllegalAccessException e) {
@@ -85,6 +84,10 @@ public class RemappingUtil {
     }
 
     public void unmapEvent(CommandSender sender) {
+        unmapEvent(sender, "");
+    }
+
+    public void unmapEvent(CommandSender sender, String event) {
         HashSet<AthenaExecutor> executors = registeredEvents.getOrDefault(sender, new HashSet<>());
         if (executors.isEmpty()) {
             AthenaCore.sendSuccessMessage(sender, "You aren't listening to any events!");
@@ -92,6 +95,7 @@ public class RemappingUtil {
         }
         executors.forEach(executor -> {
             try {
+                if (!executor.name.equals(event) && !event.isEmpty()) return;
                 executor.unmapExecutor();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -99,7 +103,12 @@ public class RemappingUtil {
         });
 
         registeredEvents.remove(sender);
-        AthenaCore.sendSuccessMessage(sender, "Successfully stopped listening to all events!");
+        AthenaCore.sendSuccessMessage(sender, event.isEmpty() ? "Successfully stopped listening to all events!"
+                : "Successfully stopped listening to all " + event + " events!");
+    }
+
+    public HashSet<AthenaExecutor> getRegisteredListeners(CommandSender sender) {
+        return registeredEvents.get(sender);
     }
 
     private static class AthenaExecutor implements EventExecutor {
@@ -108,10 +117,12 @@ public class RemappingUtil {
         private final RegisteredListener listener;
         private final EventExecutor executor;
         private final Field executorField;
+        private final String name;
 
-        public AthenaExecutor(CommandSender sender, RegisteredListener listener) throws NoSuchFieldException, IllegalAccessException {
+        public AthenaExecutor(CommandSender sender, RegisteredListener listener, String name) throws NoSuchFieldException, IllegalAccessException {
             this.sender = sender;
             this.listener = listener;
+            this.name = name;
             executorField = listener.getClass().getDeclaredField("executor");
             executorField.setAccessible(true);
             executor = (EventExecutor) executorField.get(listener);
