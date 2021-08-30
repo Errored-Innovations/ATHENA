@@ -37,16 +37,7 @@ public class RemappingUtil {
         HandlerList handlerList;
         try {
             // why is it not getHandlers? bukket explane!!!
-            Method getHandlerList;
-            try {
-                getHandlerList = clazz.getDeclaredMethod("getHandlerList");
-            } catch (NoSuchMethodException ex) {
-                getHandlerList = clazz.getMethod("getHandlerList");
-            }
-
-            getHandlerList.setAccessible(true);
-            handlerList = (HandlerList) getHandlerList.invoke(null);
-
+            handlerList = EventUtilities.getHandlers(clazz);
         } catch (NoSuchMethodException e) {
             AthenaCore.sendFailMessage(sender, "Event class " + clazz.getSimpleName() + " does not have the getHandlerList method, nag the hell out of the plugin author about this!");
             return;
