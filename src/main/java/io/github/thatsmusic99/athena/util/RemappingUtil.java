@@ -199,7 +199,7 @@ public class RemappingUtil {
                         AthenaCore.getSuccessColour());
 
                 for (String key : differences.keySet()) {
-                    hoverText = hoverText.append(Component.text(key, TextColor.color(0x9ED0FF)))
+                    hoverText = hoverText.append(Component.text(key, AthenaCore.getInfoColour()))
                             .append(Component.text(" » ", NamedTextColor.DARK_GRAY))
                             .append(Component.text(differences.get(key).oldObj.toString(), AthenaCore.getSuccessColour()))
                             .append(Component.text(" to ", NamedTextColor.GRAY))
@@ -211,15 +211,15 @@ public class RemappingUtil {
 
             }
             Class<?> listenerClass = listener.getListener().getClass();
-            hoverText = hoverText.append(Component.text("Completion time ", TextColor.color(0x9ED0FF)))
+            hoverText = hoverText.append(Component.text("Completion time ", AthenaCore.getInfoColour()))
                     .append(Component.text("» ", NamedTextColor.DARK_GRAY))
                     .append(Component.text((completionTime / 100000) + "ms", AthenaCore.getSuccessColour()))
                     .append(Component.text("\n"))
-                    .append(Component.text("Listener Class ", TextColor.color(0x9ED0FF)))
+                    .append(Component.text("Listener Class ", AthenaCore.getInfoColour()))
                     .append(Component.text("» ", NamedTextColor.DARK_GRAY))
                     .append(Component.text(listenerClass.getSimpleName() + " (" + listenerClass.getName() + ")", AthenaCore.getSuccessColour()))
                     .append(Component.text("\n"))
-                    .append(Component.text("Event Priority", TextColor.color(0x9ED0FF)))
+                    .append(Component.text("Event Priority", AthenaCore.getInfoColour()))
                     .append(Component.text("» ", NamedTextColor.DARK_GRAY))
                     .append(Component.text(listener.getPriority().name(), AthenaCore.getSuccessColour()));
             infoDump = infoDump.hoverEvent(hoverText);

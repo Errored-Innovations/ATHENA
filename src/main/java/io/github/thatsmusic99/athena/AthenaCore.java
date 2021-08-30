@@ -33,6 +33,10 @@ public class AthenaCore extends JavaPlugin {
                 .append(Component.text("» ", NamedTextColor.DARK_GRAY));
     }
 
+    public static TextColor getInfoColour() {
+        return TextColor.color(0x9ED0FF);
+    }
+
     public static TextColor getSuccessColour() {
         return TextColor.color(0xD1E9FF);
     }
