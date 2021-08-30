@@ -42,10 +42,11 @@ public class RemappingUtil {
             AthenaCore.sendFailMessage(sender, "Event class " + clazz.getSimpleName() + " does not have the getHandlerList method, nag the hell out of the plugin author about this!");
             return;
         } catch (InvocationTargetException e) {
+            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + " due to an internal error!");
             e.printStackTrace();
             return;
         } catch (IllegalAccessException e) {
-            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + "!");
+            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + " due to the lack of access!");
             return;
         }
 
