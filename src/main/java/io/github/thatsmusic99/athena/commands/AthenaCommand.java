@@ -17,6 +17,7 @@ public class AthenaCommand implements IAthenaCommand {
     public AthenaCommand() {
         subcommands = new HashMap<>();
         subcommands.put("listen", new ListenCommand());
+        subcommands.put("listeners", new ListenersCommand());
         subcommands.put("stop", new StopCommand());
     }
 
