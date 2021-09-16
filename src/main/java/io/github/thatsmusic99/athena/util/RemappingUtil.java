@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -172,25 +171,17 @@ public class RemappingUtil {
             executorField.set(listener, executor);
         }
 
-        private HashMap<String, Object> getEventDetails(Event event) throws InvocationTargetException, IllegalAccessException {
+        private HashMap<String, Object> getEventDetails(Event event) throws IllegalAccessException {
             // Create the map
             HashMap<String, Object> map = new HashMap<>();
-            // Get all the methods
-            for (Method method : event.getClass().getMethods()) {
+            // Get all the fields
+            for (Field field : event.getClass().getFields()) {
                 // Don't bother if it's static
-                if (Modifier.isStatic(method.getModifiers())) continue;
-                // Don't access methods that can't be accessed
-                if (!method.canAccess(event)) continue;
-                // We cannot fill in parameters so skip this
-                if (method.getParameterCount() != 0) continue;
-                // don't fuck with it if it doesn't return anything
-                if (method.getReturnType() == Void.class) continue;
-                // bugger off with that
-                if (method.getName().equals("callEvent")) continue;
-                // Don't check any methods that go beyond the Event class
-                if (!Event.class.isAssignableFrom(method.getDeclaringClass())) continue;
-                // Invoke the method
-                map.put(method.getName(), method.invoke(event));
+                if (Modifier.isStatic(field.getModifiers())) continue;
+                // Make it accessible
+                field.setAccessible(true);
+                // Get the field
+                map.put(field.getName(), field.get(event));
             }
             return map;
         }
