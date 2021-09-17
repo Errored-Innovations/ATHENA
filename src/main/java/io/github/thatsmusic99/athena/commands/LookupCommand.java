@@ -37,7 +37,7 @@ import io.github.thatsmusic99.athena.AthenaCore;
   
   @Override
   public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-    return null;
+    return Bukkit.getCommandMap().getKnownCommands().keySet().stream().toList();
   }
 
 }
