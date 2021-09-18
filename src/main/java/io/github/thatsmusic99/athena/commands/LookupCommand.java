@@ -22,22 +22,28 @@ import io.github.thatsmusic99.athena.AthenaCore;
   @Override
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
     if (args.length > 1) {
-      PluginCommand command = Bukkit.getPluginCommand(args[1]);
+      Command command = Bukkit.getCommandMap().getKnownCommands().get(args[1]);
       if (command == null) {
         AthenaCore.sendSuccessMessage(sender, "The Command \"" + args[1] + "\" does not exist");
         return true;
       }
       AthenaCore.sendSuccessMessage(sender, "Information on the Command " + args[1] + ":");
-      AthenaCore.sendSuccessMessage(sender, "Registering Plugin: " + command.getPlugin().getName());
+      if (command instanceof PluginIdentifiableCommand plc) {
+        AthenaCore.sendSuccessMessage(sender, "Registering Plugin: " + plc.getPlugin().getName());
+      } else {
+        AthenaCore.sendSuccessMessage(sender, "Registering Plugin: Vanilla/Bukkit");
+      }
       AthenaCore.sendSuccessMessage(sender, "Permission in Plugin.yml: " + command.getPermission());
-	    return true;
+      return true;
     }
     return false;
   }
   
   @Override
   public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-    return Bukkit.getCommandMap().getKnownCommands().keySet().stream().toList();
+    return Bukkit.getCommandMap().getKnownCommands().keySet().stream()
+        .filter((cmd) -> cmd.indexOf(':') == -1)
+        .toList();
   }
 
 }
