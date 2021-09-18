@@ -138,12 +138,14 @@ public class RemappingUtil {
                 HashMap<String, Object> newDetails = getEventDetails(event);
                 HashMap<String, Change> differences = new HashMap<>();
                 for (String key : details.keySet()) {
-                    if (details.get(key) == null ^ newDetails.get(key) != null) {
-                        differences.put(key, new Change(details.get(key), newDetails.get(key)));
+
+                    Change change = new Change(details.get(key), newDetails.get(key));
+                    if (details.get(key) == null ^ newDetails.get(key) == null) {
+                        differences.put(key, change);
                         continue;
                     }
 
-                    if (details.get(key).equals(newDetails.get(key))) continue;
+                    if (change.getOldObject().equals(change.getNewObject())) continue;
                     differences.put(key, new Change(details.get(key), newDetails.get(key)));
                 }
                 dumpData(finish - currentMillis, differences);
