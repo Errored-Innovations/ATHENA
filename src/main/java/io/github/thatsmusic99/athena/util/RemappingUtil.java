@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -93,8 +92,13 @@ public class RemappingUtil {
                 e.printStackTrace();
             }
         });
-
-        registeredEvents.remove(sender);
+        
+        // Check if player still has events that they are listening to
+        if (event.isEmpty()
+		        || (executors.size() == 1 && executors.iterator().next().name.equals(event))) {
+		    registeredEvents.remove(sender);
+		}
+        
         AthenaCore.sendSuccessMessage(sender, event.isEmpty() ? "Successfully stopped listening to all events!"
                 : "Successfully stopped listening to all " + event + " events!");
     }
@@ -139,12 +143,14 @@ public class RemappingUtil {
                 HashMap<String, Object> newDetails = getEventDetails(event);
                 HashMap<String, Change> differences = new HashMap<>();
                 for (String key : details.keySet()) {
-                    if (details.get(key) == null ^ newDetails.get(key) != null) {
-                        differences.put(key, new Change(details.get(key), newDetails.get(key)));
+
+                    Change change = new Change(details.get(key), newDetails.get(key));
+                    if (details.get(key) == null ^ newDetails.get(key) == null) {
+                        differences.put(key, change);
                         continue;
                     }
 
-                    if (details.get(key).equals(newDetails.get(key))) continue;
+                    if (change.getOldObject().equals(change.getNewObject())) continue;
                     differences.put(key, new Change(details.get(key), newDetails.get(key)));
                 }
                 dumpData(finish - currentMillis, differences);
@@ -172,26 +178,23 @@ public class RemappingUtil {
             executorField.set(listener, executor);
         }
 
-        private HashMap<String, Object> getEventDetails(Event event) throws InvocationTargetException, IllegalAccessException {
+        private HashMap<String, Object> getEventDetails(Event event) throws IllegalAccessException {
             // Create the map
             HashMap<String, Object> map = new HashMap<>();
-            // Get all the methods
-            for (Method method : event.getClass().getMethods()) {
-                // Don't bother if it's static
-                if (Modifier.isStatic(method.getModifiers())) continue;
-                // Don't access methods that can't be accessed
-                if (!method.canAccess(event)) continue;
-                // We cannot fill in parameters so skip this
-                if (method.getParameterCount() != 0) continue;
-                // don't fuck with it if it doesn't return anything
-                if (method.getReturnType() == Void.class) continue;
-                // bugger off with that
-                if (method.getName().equals("callEvent")) continue;
-                // Don't check any methods that go beyond the Event class
-                if (!Event.class.isAssignableFrom(method.getDeclaringClass())) continue;
-                // Invoke the method
-                map.put(method.getName(), method.invoke(event));
+            // Get all the fields
+            Class<?> checkedClass = event.getClass();
+            while (checkedClass != null) {
+                for (Field field : checkedClass.getDeclaredFields()) {
+                    // Don't bother if it's static
+                    if (Modifier.isStatic(field.getModifiers())) continue;
+                    // Make it accessible
+                    field.setAccessible(true);
+                    // Get the field
+                    map.put(field.getName(), field.get(event));
+                }
+                checkedClass = checkedClass.getSuperclass();
             }
+
             return map;
         }
 
@@ -205,9 +208,9 @@ public class RemappingUtil {
                 for (String key : differences.keySet()) {
                     hoverText = hoverText.append(Component.text(key, AthenaCore.getInfoColour()))
                             .append(Component.text(" » ", NamedTextColor.DARK_GRAY))
-                            .append(Component.text(differences.get(key).oldObj.toString(), AthenaCore.getSuccessColour()))
+                            .append(Component.text(differences.get(key).getOldObject(), AthenaCore.getSuccessColour()))
                             .append(Component.text(" to ", NamedTextColor.GRAY))
-                            .append(Component.text(differences.get(key).newObj.toString(), AthenaCore.getSuccessColour()))
+                            .append(Component.text(differences.get(key).getNewObject(), AthenaCore.getSuccessColour()))
                             .append(Component.text("\n"));
                 }
             } else {
@@ -235,5 +238,13 @@ public class RemappingUtil {
     }
 
     private record Change(Object oldObj, Object newObj) {
+
+        public String getNewObject() {
+            return newObj == null ? "null" : newObj.toString();
+        }
+
+        public String getOldObject() {
+            return oldObj == null ? "null" : oldObj.toString();
+        }
     }
 }

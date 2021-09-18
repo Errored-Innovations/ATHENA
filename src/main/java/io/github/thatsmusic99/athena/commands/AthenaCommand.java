@@ -19,6 +19,7 @@ public class AthenaCommand implements IAthenaCommand {
         subcommands.put("listen", new ListenCommand());
         subcommands.put("listeners", new ListenersCommand());
         subcommands.put("stop", new StopCommand());
+        subcommands.put("lookup", new LookupCommand());
     }
 
     @Override
