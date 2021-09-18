@@ -175,14 +175,19 @@ public class RemappingUtil {
             // Create the map
             HashMap<String, Object> map = new HashMap<>();
             // Get all the fields
-            for (Field field : event.getClass().getFields()) {
-                // Don't bother if it's static
-                if (Modifier.isStatic(field.getModifiers())) continue;
-                // Make it accessible
-                field.setAccessible(true);
-                // Get the field
-                map.put(field.getName(), field.get(event));
+            Class<?> checkedClass = event.getClass();
+            while (checkedClass != null) {
+                for (Field field : checkedClass.getDeclaredFields()) {
+                    // Don't bother if it's static
+                    if (Modifier.isStatic(field.getModifiers())) continue;
+                    // Make it accessible
+                    field.setAccessible(true);
+                    // Get the field
+                    map.put(field.getName(), field.get(event));
+                }
+                checkedClass = checkedClass.getSuperclass();
             }
+
             return map;
         }
 
