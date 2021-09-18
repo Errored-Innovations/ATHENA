@@ -201,9 +201,9 @@ public class RemappingUtil {
                 for (String key : differences.keySet()) {
                     hoverText = hoverText.append(Component.text(key, AthenaCore.getInfoColour()))
                             .append(Component.text(" » ", NamedTextColor.DARK_GRAY))
-                            .append(Component.text(differences.get(key).oldObj.toString(), AthenaCore.getSuccessColour()))
+                            .append(Component.text(differences.get(key).getOldObject(), AthenaCore.getSuccessColour()))
                             .append(Component.text(" to ", NamedTextColor.GRAY))
-                            .append(Component.text(differences.get(key).newObj.toString(), AthenaCore.getSuccessColour()))
+                            .append(Component.text(differences.get(key).getNewObject(), AthenaCore.getSuccessColour()))
                             .append(Component.text("\n"));
                 }
             } else {
@@ -231,5 +231,13 @@ public class RemappingUtil {
     }
 
     private record Change(Object oldObj, Object newObj) {
+
+        public String getNewObject() {
+            return newObj == null ? "null" : newObj.toString();
+        }
+
+        public String getOldObject() {
+            return oldObj == null ? "null" : oldObj.toString();
+        }
     }
 }
