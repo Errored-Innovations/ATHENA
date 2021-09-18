@@ -92,8 +92,13 @@ public class RemappingUtil {
                 e.printStackTrace();
             }
         });
-
-        registeredEvents.remove(sender);
+        
+        // Check if player still has events that they are listening to
+        if (event.isEmpty()
+		        || (executors.size() == 1 && executors.iterator().next().name.equals(event))) {
+		    registeredEvents.remove(sender);
+		}
+        
         AthenaCore.sendSuccessMessage(sender, event.isEmpty() ? "Successfully stopped listening to all events!"
                 : "Successfully stopped listening to all " + event + " events!");
     }

@@ -18,8 +18,8 @@ public class StopCommand implements IAthenaCommand {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
-        if (args.length > 0) {
-            RemappingUtil.get().unmapEvent(sender, args[0]);
+        if (args.length > 1) {
+            RemappingUtil.get().unmapEvent(sender, args[1]);
             return true;
         }
         RemappingUtil.get().unmapEvent(sender);
