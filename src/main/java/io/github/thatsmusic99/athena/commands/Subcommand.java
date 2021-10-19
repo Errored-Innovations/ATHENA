@@ -9,13 +9,13 @@ public enum Subcommand {
     STOP(new StopCommand()),
     LOOKUP(new LookupCommand());
 
-    private final IAthenaCommand iAthenaCommand;
+    private final IAthenaCommand command;
     Subcommand(IAthenaCommand iAthenaCommand) {
-        this.iAthenaCommand = iAthenaCommand;
+        this.command = iAthenaCommand;
     }
 
     public IAthenaCommand getExecutor() {
-        return iAthenaCommand;
+        return command;
     }
 
     public static Subcommand match(String string) {
