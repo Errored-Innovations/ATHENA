@@ -15,16 +15,20 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class RemappingUtil {
 
     private static RemappingUtil instance;
-    private final HashMap<CommandSender, HashSet<AthenaExecutor>> registeredEvents;
+    private final HashMap<CommandSender, HashSet<AthenaExecutor>> listeningUsers;
+    private final HashMap<String, HashSet<AthenaExecutor>> registeredEvents;
 
     public RemappingUtil() {
         instance = this;
+        listeningUsers = new HashMap<>();
         registeredEvents = new HashMap<>();
     }
 
@@ -33,6 +37,18 @@ public class RemappingUtil {
     }
 
     public void remapEvent(Class<? extends Event> clazz, CommandSender sender) {
+        HashSet<AthenaExecutor> listeners = listeningUsers.getOrDefault(sender, new HashSet<>());
+        if (registeredEvents.containsKey(clazz.getSimpleName())) {
+            for (AthenaExecutor executor : registeredEvents.get(clazz.getSimpleName())) {
+                executor.addSender(sender);
+                listeners.add(executor);
+            }
+            listeningUsers.put(sender, listeners);
+            AthenaCore.sendSuccessMessage(sender, "Successfully started listening to event " + clazz.getSimpleName() + "!");
+            return;
+        }
+
+
         HandlerList handlerList;
         try {
             // why is it not getHandlers? bukket explane!!!
@@ -54,13 +70,14 @@ public class RemappingUtil {
             return;
         }
 
-        HashSet<AthenaExecutor> listeners = registeredEvents.getOrDefault(sender, new HashSet<>());
         int currentSize = listeners.size();
+        HashSet<AthenaExecutor> eventExecutors = new HashSet<>();
         for (RegisteredListener listener : handlerList.getRegisteredListeners()) {
             try {
                 AthenaExecutor executor = new AthenaExecutor(sender, listener, clazz.getSimpleName());
                 executor.remapExecutor();
                 listeners.add(executor);
+                eventExecutors.add(executor);
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 AthenaCore.sendFailMessage(sender, "Failed to listen to event " + clazz.getSimpleName() + ", please report this to the ATHENA developer.");
                 e.printStackTrace();
@@ -70,7 +87,8 @@ public class RemappingUtil {
             AthenaCore.sendFailMessage(sender, "Event " + clazz.getSimpleName() + " hasn't got any listeners!");
         }
 
-        registeredEvents.put(sender, listeners);
+        listeningUsers.put(sender, listeners);
+        registeredEvents.put(clazz.getSimpleName(), eventExecutors);
         AthenaCore.sendSuccessMessage(sender, "Successfully started listening to event " + clazz.getSimpleName() + "!");
     }
 
@@ -79,7 +97,7 @@ public class RemappingUtil {
     }
 
     public void unmapEvent(CommandSender sender, String event) {
-        HashSet<AthenaExecutor> executors = registeredEvents.getOrDefault(sender, new HashSet<>());
+        HashSet<AthenaExecutor> executors = listeningUsers.getOrDefault(sender, new HashSet<>());
         if (executors.isEmpty()) {
             AthenaCore.sendSuccessMessage(sender, "You aren't listening to any events!");
             return;
@@ -87,7 +105,7 @@ public class RemappingUtil {
         executors.forEach(executor -> {
             try {
                 if (!executor.name.equals(event) && !event.isEmpty()) return;
-                executor.unmapExecutor();
+                executor.removeSender(sender);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -96,7 +114,7 @@ public class RemappingUtil {
         // Check if player still has events that they are listening to
         if (event.isEmpty()
 		        || (executors.size() == 1 && executors.iterator().next().name.equals(event))) {
-		    registeredEvents.remove(sender);
+		    listeningUsers.remove(sender);
 		}
         
         AthenaCore.sendSuccessMessage(sender, event.isEmpty() ? "Successfully stopped listening to all events!"
@@ -104,19 +122,20 @@ public class RemappingUtil {
     }
 
     public HashSet<AthenaExecutor> getRegisteredListeners(CommandSender sender) {
-        return registeredEvents.get(sender);
+        return listeningUsers.get(sender);
     }
 
     private static class AthenaExecutor implements EventExecutor {
 
-        private final CommandSender sender;
+        private final List<CommandSender> senders;
         private final RegisteredListener listener;
         private final EventExecutor executor;
         private final Field executorField;
         private final String name;
 
         public AthenaExecutor(CommandSender sender, RegisteredListener listener, String name) throws NoSuchFieldException, IllegalAccessException {
-            this.sender = sender;
+            senders = new ArrayList<>();
+            senders.add(sender);
             this.listener = listener;
             this.name = name;
             executorField = listener.getClass().getDeclaredField("executor");
@@ -133,8 +152,9 @@ public class RemappingUtil {
                 try {
                     executor.execute(listener, event);
                 } catch (Throwable ex) {
-                    AthenaCore.sendFailMessage(sender, "An error occurred internally within " + this.listener.getPlugin().getName() + ", " +
-                            "please report it to the developer.");
+                    senders.forEach(sender -> AthenaCore.sendFailMessage(sender,
+                            "An error occurred internally within " + this.listener.getPlugin().getName() + ", " +
+                            "please report it to the developer."));
                     ex.printStackTrace();
                     return;
                 }
@@ -155,15 +175,17 @@ public class RemappingUtil {
                 }
                 dumpData(finish - currentMillis, differences);
             } catch (Throwable ex) {
-                AthenaCore.sendFailMessage(sender, "An error occurred internally within ATHENA, please report it to the developer.");
+                senders.forEach(sender -> AthenaCore.sendFailMessage(sender,
+                        "An error occurred internally within ATHENA, please report it to the developer."));
                 ex.printStackTrace();
                 if (!executed) {
                     try {
                         AthenaCore.get().getLogger().info("Executing listener since ATHENA failed before it could.");
                         executor.execute(listener, event);
                     } catch (Throwable ex2) {
-                        AthenaCore.sendFailMessage(sender, "An error occurred internally within " + this.listener.getPlugin().getName() + ", " +
-                                "please report it to the developer.");
+                        senders.forEach(sender -> AthenaCore.sendFailMessage(sender,
+                                "An error occurred internally within " + this.listener.getPlugin().getName() + ", " +
+                                "please report it to the developer."));
                         ex2.printStackTrace();
                     }
                 }
@@ -176,6 +198,9 @@ public class RemappingUtil {
 
         private void unmapExecutor() throws IllegalAccessException {
             executorField.set(listener, executor);
+            HashSet<AthenaExecutor> executors = RemappingUtil.get().registeredEvents.get(name);
+            executors.remove(this);
+            RemappingUtil.get().registeredEvents.put(name, executors);
         }
 
         private HashMap<String, Object> getEventDetails(Event event) throws IllegalAccessException {
@@ -233,7 +258,16 @@ public class RemappingUtil {
 
             Component result = AthenaCore.getPrefix().append(infoDump);
 
-            sender.sendMessage(result);
+            senders.forEach(sender -> sender.sendMessage(result));
+        }
+
+        protected void addSender(CommandSender sender) {
+            senders.add(sender);
+        }
+
+        protected void removeSender(CommandSender sender) throws IllegalAccessException {
+            senders.remove(sender);
+            if (senders.size() == 0) unmapExecutor();
         }
     }
 
