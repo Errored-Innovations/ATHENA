@@ -1,7 +1,6 @@
 package io.github.thatsmusic99.athena.commands;
 
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.TabExecutor;
 
-public interface IAthenaCommand extends CommandExecutor, TabCompleter {
+public interface IAthenaCommand extends TabExecutor {
 }
