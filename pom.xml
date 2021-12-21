@@ -6,7 +6,7 @@
 
     <groupId>io.github.thatsmusic99</groupId>
     <artifactId>ATHENA</artifactId>
-    <version>1.0-BETA-3</version>
+    <version>1.0.0</version>
     <build>
         <plugins>
             <plugin>
