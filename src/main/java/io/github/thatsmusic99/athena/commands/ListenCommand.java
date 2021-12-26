@@ -40,7 +40,8 @@ public class ListenCommand implements IAthenaCommand {
                 eventClass = (Class<? extends Event>) tempClass;
                 EventCache.get().addEvent(eventClass);
             } catch (ClassNotFoundException e) {
-                AthenaCore.sendFailMessage(sender, "There is no such event with this name! Please include the package name as well.");
+                AthenaCore.sendFailMessage(sender, "There is no such event with this name! Please include the package" +
+                        " name as well.");
                 return true;
             }
         }
@@ -50,7 +51,8 @@ public class ListenCommand implements IAthenaCommand {
 
     @Nullable
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s,
+                                      @NotNull String[] args) {
         List<String> results = new ArrayList<>();
         if (args.length == 2) {
             StringUtil.copyPartialMatches(args[1], EventCache.get().getEventNames(), results);

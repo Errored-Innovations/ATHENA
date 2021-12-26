@@ -10,6 +10,7 @@ public enum Subcommand {
     LOOKUP(new LookupCommand());
 
     private final IAthenaCommand command;
+
     Subcommand(IAthenaCommand iAthenaCommand) {
         this.command = iAthenaCommand;
     }

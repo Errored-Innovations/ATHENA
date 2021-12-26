@@ -9,7 +9,10 @@ import java.lang.annotation.*;
 public @interface Command {
 
     String name();
+
     String permission();
+
     String description();
+
     String usage();
 }

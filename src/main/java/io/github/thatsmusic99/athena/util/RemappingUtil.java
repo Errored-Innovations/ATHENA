@@ -44,7 +44,8 @@ public class RemappingUtil {
                 listeners.add(executor);
             }
             listeningUsers.put(sender, listeners);
-            AthenaCore.sendSuccessMessage(sender, "Successfully started listening to event " + clazz.getSimpleName() + "!");
+            AthenaCore.sendSuccessMessage(sender,
+                    "Successfully started listening to event " + clazz.getSimpleName() + "!");
             return;
         }
 
@@ -54,19 +55,23 @@ public class RemappingUtil {
             // why is it not getHandlers? bukket explane!!!
             handlerList = EventUtilities.getHandlers(clazz);
         } catch (NoSuchMethodException e) {
-            AthenaCore.sendFailMessage(sender, "Event class " + clazz.getSimpleName() + " does not have the getHandlerList method, nag the hell out of the plugin author about this!");
+            AthenaCore.sendFailMessage(sender, "Event class " + clazz.getSimpleName() + " does not have the " +
+                    "getHandlerList method, nag the hell out of the plugin author about this!");
             return;
         } catch (InvocationTargetException e) {
-            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + " due to an internal error!");
+            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + " due " +
+                    "to an internal error!");
             e.printStackTrace();
             return;
         } catch (IllegalAccessException e) {
-            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + " due to the lack of access!");
+            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + clazz.getSimpleName() + " due " +
+                    "to the lack of access!");
             return;
         }
 
         if (handlerList == null) {
-            AthenaCore.sendFailMessage(sender, "The handler list for " + clazz.getSimpleName() + " is returning null! That's... not how it works?");
+            AthenaCore.sendFailMessage(sender, "The handler list for " + clazz.getSimpleName() + " is returning null!" +
+                    " That's... not how it works?");
             return;
         }
 
@@ -79,7 +84,8 @@ public class RemappingUtil {
                 listeners.add(executor);
                 eventExecutors.add(executor);
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                AthenaCore.sendFailMessage(sender, "Failed to listen to event " + clazz.getSimpleName() + ", please report this to the ATHENA developer.");
+                AthenaCore.sendFailMessage(sender, "Failed to listen to event " + clazz.getSimpleName() + ", please " +
+                        "report this to the ATHENA developer.");
                 e.printStackTrace();
             }
         }
@@ -110,13 +116,13 @@ public class RemappingUtil {
                 e.printStackTrace();
             }
         });
-        
+
         // Check if player still has events that they are listening to
         if (event.isEmpty()
-		        || (executors.size() == 1 && executors.iterator().next().name.equals(event))) {
-		    listeningUsers.remove(sender);
-		}
-        
+                || (executors.size() == 1 && executors.iterator().next().name.equals(event))) {
+            listeningUsers.remove(sender);
+        }
+
         AthenaCore.sendSuccessMessage(sender, event.isEmpty() ? "Successfully stopped listening to all events!"
                 : "Successfully stopped listening to all " + event + " events!");
     }
@@ -154,7 +160,7 @@ public class RemappingUtil {
                 } catch (Throwable ex) {
                     senders.forEach(sender -> AthenaCore.sendFailMessage(sender,
                             "An error occurred internally within " + this.listener.getPlugin().getName() + ", " +
-                            "please report it to the developer."));
+                                    "please report it to the developer."));
                     ex.printStackTrace();
                     return;
                 }
@@ -185,7 +191,7 @@ public class RemappingUtil {
                     } catch (Throwable ex2) {
                         senders.forEach(sender -> AthenaCore.sendFailMessage(sender,
                                 "An error occurred internally within " + this.listener.getPlugin().getName() + ", " +
-                                "please report it to the developer."));
+                                        "please report it to the developer."));
                         ex2.printStackTrace();
                     }
                 }
@@ -239,7 +245,8 @@ public class RemappingUtil {
                             .append(Component.text("\n"));
                 }
             } else {
-                infoDump = Component.text(listener.getPlugin().getName() + " didn't make any changes.", AthenaCore.getSuccessColour());
+                infoDump = Component.text(listener.getPlugin().getName() + " didn't make any changes.",
+                        AthenaCore.getSuccessColour());
 
             }
             Class<?> listenerClass = listener.getListener().getClass();
@@ -249,7 +256,8 @@ public class RemappingUtil {
                     .append(Component.text("\n"))
                     .append(Component.text("Listener Class ", AthenaCore.getInfoColour()))
                     .append(Component.text("» ", NamedTextColor.DARK_GRAY))
-                    .append(Component.text(listenerClass.getSimpleName() + " (" + listenerClass.getName() + ")", AthenaCore.getSuccessColour()))
+                    .append(Component.text(listenerClass.getSimpleName() + " (" + listenerClass.getName() + ")",
+                            AthenaCore.getSuccessColour()))
                     .append(Component.text("\n"))
                     .append(Component.text("Event Priority", AthenaCore.getInfoColour()))
                     .append(Component.text("» ", NamedTextColor.DARK_GRAY))

@@ -8,7 +8,8 @@ import java.lang.reflect.Method;
 
 public class EventUtilities {
 
-    public static HandlerList getHandlers(Class<? extends Event> eventClass) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static HandlerList getHandlers(Class<? extends Event> eventClass) throws NoSuchMethodException,
+            InvocationTargetException, IllegalAccessException {
         Method getHandlerList;
         try {
             getHandlerList = eventClass.getDeclaredMethod("getHandlerList");

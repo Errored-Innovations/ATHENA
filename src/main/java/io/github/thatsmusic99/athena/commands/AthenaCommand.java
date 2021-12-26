@@ -15,7 +15,8 @@ public class AthenaCommand implements IAthenaCommand {
     public static HelpCommand HELP_COMMAND = new HelpCommand();
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command cmd, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command cmd,
+                             @NotNull String s, @NotNull String[] args) {
         if (args.length == 0) {
             HELP_COMMAND.onCommand(sender, cmd, s, args);
             return true;
@@ -31,7 +32,8 @@ public class AthenaCommand implements IAthenaCommand {
 
         // Check for my stupidity
         if (commandInfo == null) {
-            AthenaCore.sendFailMessage(sender, "The " + args[0] + " command is not configured properly! Please let the ATHENA developer know.");
+            AthenaCore.sendFailMessage(sender, "The " + args[0] + " command is not configured properly! Please let " +
+                    "the ATHENA developer know.");
             return true;
         }
         // If no permission
@@ -47,7 +49,9 @@ public class AthenaCommand implements IAthenaCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String s, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender,
+                                                @NotNull org.bukkit.command.Command command, @NotNull String s,
+                                                @NotNull String[] args) {
         List<String> results = new ArrayList<>();
         if (args.length == 1) {
             for (Subcommand subcommand : Subcommand.values()) {

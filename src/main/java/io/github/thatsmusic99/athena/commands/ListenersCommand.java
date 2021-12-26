@@ -27,7 +27,8 @@ import java.util.List;
 public class ListenersCommand implements IAthenaCommand {
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s,
+                             @NotNull String[] args) {
         if (args.length == 1) {
             AthenaCore.sendFailMessage(sender, "You need to specify an event or plugin to dump the listeners for!");
             return false;
@@ -41,7 +42,8 @@ public class ListenersCommand implements IAthenaCommand {
 
             if (listeners.size() > 0) {
                 for (RegisteredListener listener : listeners) {
-                    AthenaCore.sendSuccessMessage(sender, listener.getListener().getClass().getSimpleName() + " (Priority " + listener.getPriority().name() + ")");
+                    AthenaCore.sendSuccessMessage(sender, listener.getListener().getClass().getSimpleName() + " " +
+                            "(Priority " + listener.getPriority().name() + ")");
                 }
                 return true;
             }
@@ -60,7 +62,8 @@ public class ListenersCommand implements IAthenaCommand {
                 eventClass = (Class<? extends Event>) tempClass;
                 EventCache.get().addEvent(eventClass);
             } catch (ClassNotFoundException e) {
-                AthenaCore.sendFailMessage(sender, "There is no such event with this name! Please include the package name as well.");
+                AthenaCore.sendFailMessage(sender, "There is no such event with this name! Please include the package" +
+                        " name as well.");
                 return true;
             }
         }
@@ -69,20 +72,25 @@ public class ListenersCommand implements IAthenaCommand {
         try {
             handlerList = EventUtilities.getHandlers(eventClass);
         } catch (NoSuchMethodException e) {
-            AthenaCore.sendFailMessage(sender, "Event class " + eventClass.getSimpleName() + " does not have the getHandlerList method, nag the hell out of the plugin author about this!");
+            AthenaCore.sendFailMessage(sender, "Event class " + eventClass.getSimpleName() + " does not have the " +
+                    "getHandlerList method, nag the hell out of the plugin author about this!");
             return true;
         } catch (InvocationTargetException e) {
-            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + eventClass.getSimpleName() + " due to an internal error!");
+            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + eventClass.getSimpleName() +
+                    " due to an internal error!");
             e.printStackTrace();
             return true;
         } catch (IllegalAccessException e) {
-            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + eventClass.getSimpleName() + " due to the lack of access!");
+            AthenaCore.sendFailMessage(sender, "Couldn't access getHandlerList for " + eventClass.getSimpleName() +
+                    " due to the lack of access!");
             return true;
         }
 
         if (handlerList.getRegisteredListeners().length > 0) {
             for (RegisteredListener listener : handlerList.getRegisteredListeners()) {
-                AthenaCore.sendSuccessMessage(sender, listener.getPlugin().getName() + " - " + listener.getListener().getClass().getSimpleName() + " (Priority " + listener.getPriority().name() + ")");
+                AthenaCore.sendSuccessMessage(sender,
+                        listener.getPlugin().getName() + " - " + listener.getListener().getClass().getSimpleName() +
+                                " (Priority " + listener.getPriority().name() + ")");
             }
             return true;
         } else {
@@ -92,7 +100,8 @@ public class ListenersCommand implements IAthenaCommand {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
+                                                @NotNull String s, @NotNull String[] args) {
         List<String> results = new ArrayList<>();
         if (args.length == 2) {
             List<String> collection = new ArrayList<>(EventCache.get().getEventNames());
