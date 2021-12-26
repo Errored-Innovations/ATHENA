@@ -2,6 +2,7 @@ package io.github.thatsmusic99.athena.commands;
 
 import io.github.thatsmusic99.athena.AthenaCore;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,7 +15,7 @@ import java.util.Locale;
 
 public class HelpCommand implements IAthenaCommand {
 
-    private final Component decoration = Component.text("           ", AthenaCore.getInfoColour(), TextDecoration.STRIKETHROUGH);
+    private final Component decoration = Component.text("                      ", TextColor.color(0x4EB4FF), TextDecoration.STRIKETHROUGH);
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
