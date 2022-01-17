@@ -1,6 +1,6 @@
 name: ATHENA
 main: io.github.thatsmusic99.athena.AthenaCore
-version: 1.0
+version: 1.0.0
 author: Thatsmusic99
 api-version: 1.17
 contributors: [oxolotel, YouHaveTrouble]
