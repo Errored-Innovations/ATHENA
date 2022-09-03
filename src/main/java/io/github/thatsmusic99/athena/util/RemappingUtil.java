@@ -26,11 +26,13 @@ public class RemappingUtil {
     // A HashMap containing command senders listening to a set of events.
     private final HashMap<CommandSender, HashSet<AthenaExecutor>> listeningUsers;
     private final HashMap<String, HashSet<AthenaExecutor>> registeredEvents;
+    private final HashMap<String, AthenaListener> listeners;
 
     public RemappingUtil() {
         instance = this;
         listeningUsers = new HashMap<>();
         registeredEvents = new HashMap<>();
+        listeners = new HashMap<>();
     }
 
     public static RemappingUtil get() {
@@ -39,17 +41,22 @@ public class RemappingUtil {
 
     public void remapEvent(Class<? extends Event> clazz, CommandSender sender) {
         HashSet<AthenaExecutor> listeners = listeningUsers.getOrDefault(sender, new HashSet<>());
-        if (registeredEvents.containsKey(clazz.getSimpleName())) {
+        if (registeredEvents.containsKey(clazz.getSimpleName()) && !registeredEvents.get(clazz.getSimpleName()).isEmpty()) {
             for (AthenaExecutor executor : registeredEvents.get(clazz.getSimpleName())) {
+                // If the player is already listening, tell them to shove off
+                if (executor.hasSender(sender)) {
+                    AthenaCore.sendFailMessage(sender, "You're already listening to event " + clazz.getSimpleName() + "!");
+                    return;
+                }
                 executor.addSender(sender);
                 listeners.add(executor);
             }
             listeningUsers.put(sender, listeners);
+            this.listeners.get(clazz.getSimpleName()).addSender(sender);
             AthenaCore.sendSuccessMessage(sender,
                     "Successfully started listening to event " + clazz.getSimpleName() + "!");
             return;
         }
-
 
         HandlerList handlerList;
         try {
@@ -95,6 +102,14 @@ public class RemappingUtil {
         }
 
         listeningUsers.put(sender, listeners);
+        AthenaListener listener = new AthenaListener();
+        listener.addSender(sender);
+        Bukkit.getPluginManager().registerEvent(clazz, listener, EventPriority.LOWEST, ((listener1, event) -> {
+            if (!(listener1 instanceof AthenaListener)) return;
+            if (event.getClass() != clazz) return;
+            ((AthenaListener) listener1).onEvent(event);
+        }), AthenaCore.get());
+        this.listeners.put(clazz.getSimpleName(), listener);
         registeredEvents.put(clazz.getSimpleName(), eventExecutors);
         AthenaCore.sendSuccessMessage(sender, "Successfully started listening to event " + clazz.getSimpleName() + "!");
     }
@@ -111,7 +126,8 @@ public class RemappingUtil {
         }
         executors.forEach(executor -> {
             try {
-                if (!executor.name.equals(event) && !event.isEmpty()) return;
+                if (!executor.getName().equals(event) && !event.isEmpty()) return;
+                listeners.get(executor.getName()).removeSender(sender);
                 executor.removeSender(sender);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
