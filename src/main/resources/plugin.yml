@@ -1,10 +1,9 @@
 name: ATHENA
 main: io.github.thatsmusic99.athena.AthenaCore
-version: 1.0.0
+version: ${project.version}
 author: Thatsmusic99
 api-version: 1.17
 contributors: [oxolotel, YouHaveTrouble]
-
 commands:
   athena:
     description: Core ATHENA command
