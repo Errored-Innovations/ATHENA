@@ -23,6 +23,7 @@ import java.util.List;
 public class RemappingUtil {
 
     private static RemappingUtil instance;
+    // A HashMap containing command senders listening to a set of events.
     private final HashMap<CommandSender, HashSet<AthenaExecutor>> listeningUsers;
     private final HashMap<String, HashSet<AthenaExecutor>> registeredEvents;
 
