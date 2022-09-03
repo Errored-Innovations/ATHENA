@@ -1,24 +1,16 @@
 package io.github.thatsmusic99.athena.util;
 
 import io.github.thatsmusic99.athena.AthenaCore;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 public class RemappingUtil {
 
@@ -136,7 +128,7 @@ public class RemappingUtil {
 
         // Check if player still has events that they are listening to
         if (event.isEmpty()
-                || (executors.size() == 1 && executors.iterator().next().name.equals(event))) {
+                || (executors.size() == 1 && executors.iterator().next().getName().equals(event))) {
             listeningUsers.remove(sender);
         }
 
@@ -146,6 +138,10 @@ public class RemappingUtil {
 
     public HashSet<AthenaExecutor> getRegisteredListeners(CommandSender sender) {
         return listeningUsers.get(sender);
+    }
+
+    public HashMap<String, HashSet<AthenaExecutor>> getRegisteredEvents() {
+        return registeredEvents;
     }
 
     public static record Change(Object oldObj, Object newObj) {

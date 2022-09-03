@@ -4,6 +4,8 @@ import io.github.thatsmusic99.athena.AthenaCore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -86,15 +88,19 @@ public class AthenaExecutor implements EventExecutor {
         }
     }
 
-    private void remapExecutor() throws IllegalAccessException {
+    public String getName() {
+        return name;
+    }
+
+    void remapExecutor() throws IllegalAccessException {
         executorField.set(listener, this);
     }
 
     private void unmapExecutor() throws IllegalAccessException {
         executorField.set(listener, executor);
-        HashSet<AthenaExecutor> executors = RemappingUtil.get().registeredEvents.get(name);
+        HashSet<AthenaExecutor> executors = RemappingUtil.get().getRegisteredEvents().get(name);
         executors.remove(this);
-        RemappingUtil.get().registeredEvents.put(name, executors);
+        RemappingUtil.get().getRegisteredEvents().put(name, executors);
     }
 
     private HashMap<String, Object> getEventDetails(Event event) throws IllegalAccessException {
@@ -121,8 +127,8 @@ public class AthenaExecutor implements EventExecutor {
         TextComponent infoDump;
         TextComponent hoverText = Component.text().build();
         if (!differences.isEmpty()) {
-            infoDump = Component.text(listener.getPlugin().getName() + " made some changes to the event!",
-                    AthenaCore.getSuccessColour());
+            infoDump = Component.text(listener.getPlugin().getName(), AthenaCore.getInfoColour())
+                    .append(Component.text(" made some changes to the event!", AthenaCore.getSuccessColour()));
 
             for (String key : differences.keySet()) {
                 hoverText = hoverText.append(Component.text(key, AthenaCore.getInfoColour()))
@@ -134,7 +140,7 @@ public class AthenaExecutor implements EventExecutor {
             }
         } else {
             infoDump = Component.text(listener.getPlugin().getName() + " didn't make any changes.",
-                    AthenaCore.getSuccessColour());
+                    TextColor.color(0xA0B1B8), TextDecoration.ITALIC);
 
         }
         Class<?> listenerClass = listener.getListener().getClass();
@@ -164,5 +170,9 @@ public class AthenaExecutor implements EventExecutor {
     protected void removeSender(CommandSender sender) throws IllegalAccessException {
         senders.remove(sender);
         if (senders.size() == 0) unmapExecutor();
+    }
+
+    protected boolean hasSender(CommandSender sender) {
+        return senders.contains(sender);
     }
 }
