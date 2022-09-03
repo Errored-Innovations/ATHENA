@@ -38,6 +38,7 @@ public class AthenaExecutor implements EventExecutor {
 
     @Override
     public void execute(@NotNull Listener listener, @NotNull Event event) {
+        if (!event.getClass().getSimpleName().equals(name)) return;
         boolean executed = false;
         try {
             HashMap<String, Object> details = getEventDetails(event);
