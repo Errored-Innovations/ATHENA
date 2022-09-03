@@ -19,7 +19,10 @@ public class AthenaCore extends JavaPlugin {
     public void onEnable() {
         instance = this;
         getCommand("athena").setExecutor(new AthenaCommand());
-        new Metrics(this, 12408);
+        try {
+            new Metrics(this, 12408);
+        } catch (NoClassDefFoundError ignored) {}
+
         new RemappingUtil();
         Bukkit.getScheduler().runTaskAsynchronously(this, EventCache::new);
     }
@@ -45,11 +48,31 @@ public class AthenaCore extends JavaPlugin {
         return TextColor.color(0xFCC0B3);
     }
 
+    public static TextColor getNoticeColour() {
+        return TextColor.color(0xC2FFBB);
+    }
+
+    public static TextColor getNoticeColourDark() {
+        return TextColor.color(0x7AF47A);
+    }
+
     public static void sendSuccessMessage(CommandSender sender, String message) {
-        sender.sendMessage(AthenaCore.getPrefix().append(Component.text(message, AthenaCore.getSuccessColour())));
+        sendSuccessMessage(sender, Component.text(message, AthenaCore.getSuccessColour()));
+    }
+
+    public static void sendSuccessMessage(CommandSender sender, Component component) {
+        sender.sendMessage(AthenaCore.getPrefix().append(component));
     }
 
     public static void sendFailMessage(CommandSender sender, String message) {
         sender.sendMessage(AthenaCore.getPrefix().append(Component.text(message, AthenaCore.getFailColour())));
+    }
+
+    public static void sendNoticeMessage(CommandSender sender, String message) {
+        sendNoticeMessage(sender, Component.text(message, AthenaCore.getNoticeColour()));
+    }
+
+    public static void sendNoticeMessage(CommandSender sender, Component component) {
+        sender.sendMessage(AthenaCore.getPrefix().append(component));
     }
 }
